@@ -81,7 +81,10 @@ def get_payment_requests():
 
 
 @app.post("/webhook")
-async def alchemy_webhook(request: Request):
+async def webhook(request: Request):
+    data = await request.json()
+    print("WEBHOOK RECEIVED:", data)
+    return {"status": "ok"}
     data = await request.json()
 
     print("Incoming Webhook:", data)
