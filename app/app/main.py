@@ -81,7 +81,10 @@ async def alchemy_webhook(request: Request):
     try:
         for tx in activities:
             tx_hash = tx.get("hash")
-            amount = str(tx.get("value"))
+           raw_value = tx.get("value", 0)
+decimals = tx.get("rawContract", {}).get("decimals", 6)
+
+amount = str(raw_value / (10 ** decimals))
             asset = tx.get("asset")
             from_addr = tx.get("fromAddress")
             to_addr = tx.get("toAddress")
