@@ -13,6 +13,7 @@ class Transaction(Base):
     to_address = Column(String, nullable=False)
     network = Column(String, nullable=True)
     raw_data = Column(Text, nullable=True)
+    
 class PaymentRequest(Base):
     __tablename__ = "payment_requests"
 
