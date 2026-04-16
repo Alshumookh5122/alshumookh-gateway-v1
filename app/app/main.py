@@ -63,11 +63,21 @@ async def alchemy_webhook(request: Request):
     db = SessionLocal()
 
     for tx in activities:
-        tx_hash = tx.get("hash")
-        amount = str(tx.get("value"))
-        asset = tx.get("asset")
-        from_addr = tx.get("fromAddress")
-        to_addr = tx.get("toAddress")
+    tx_hash = tx.get("hash")
+    amount = str(tx.get("value"))
+    asset = tx.get("asset")
+    to_addr = tx.get("toAddress")
+
+    payment = db.query(PaymentRequest).filter(
+        PaymentRequest.wallet_address == to_addr,
+        PaymentRequest.amount == amount,
+        PaymentRequest.asset == asset,
+        PaymentRequest.status == "pending"
+    ).first()
+
+    if payment:
+        payment.status = "paid"
+        print(f"✅ Payment matched: {payment.reference}")
 
         print("💰 Transaction Detected")
         print(f"Amount: {amount} {asset}")
