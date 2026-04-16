@@ -92,3 +92,31 @@ async def alchemy_webhook(request: Request):
     db.close()
 
     return {"status": "processed"}
+
+import uuid
+
+@app.post("/create-payment")
+def create_payment(amount: str, asset: str):
+    db = SessionLocal()
+
+    reference = str(uuid.uuid4())
+
+    payment = PaymentRequest(
+        reference=reference,
+        amount=amount,
+        asset=asset,
+        wallet_address=settings.WALLET_ADDRESS,
+        status="pending"
+    )
+
+    db.add(payment)
+    db.commit()
+    db.close()
+
+    return {
+        "reference": reference,
+        "amount": amount,
+        "asset": asset,
+        "wallet": settings.WALLET_ADDRESS,
+        "status": "pending"
+    }
