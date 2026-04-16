@@ -30,4 +30,18 @@ async def alchemy_webhook(request: Request):
 
     print("🔥 Incoming Webhook:", data)
 
-    return {"status": "received"}
+    activities = data.get("event", {}).get("activity", [])
+
+    for tx in activities:
+        amount = tx.get("value")
+        asset = tx.get("asset")
+        from_addr = tx.get("fromAddress")
+        to_addr = tx.get("toAddress")
+
+        print("💰 Transaction Detected")
+        print(f"Amount: {amount} {asset}")
+        print(f"From: {from_addr}")
+        print(f"To: {to_addr}")
+        print("----------------------")
+
+    return {"status": "processed"}
