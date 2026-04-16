@@ -22,3 +22,12 @@ def get_transactions():
         "status": "success",
         "data": []
     }
+from fastapi import Request
+
+@app.post("/webhook")
+async def alchemy_webhook(request: Request):
+    data = await request.json()
+
+    print("🔥 Incoming Webhook:", data)
+
+    return {"status": "received"}
