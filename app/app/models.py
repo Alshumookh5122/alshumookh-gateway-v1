@@ -13,3 +13,12 @@ class Transaction(Base):
     to_address = Column(String, nullable=False)
     network = Column(String, nullable=True)
     raw_data = Column(Text, nullable=True)
+class PaymentRequest(Base):
+    __tablename__ = "payment_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    reference = Column(String, unique=True, index=True)
+    amount = Column(String)
+    asset = Column(String)
+    wallet_address = Column(String)
+    status = Column(String, default="pending")  # pending / paid
