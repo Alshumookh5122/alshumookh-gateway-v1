@@ -81,6 +81,70 @@ async def alchemy_webhook(request: Request):
     try:
         for tx in activities:
             tx_hash = tx.get("hash")
+
+            raw_value = tx.get("value", 0)
+            decimals = tx.get("rawContract", {}).get("decimals", 6)
+            amount = str(raw_value / (10 ** decimals))
+
+            asset = tx.get("asset")
+            from_addr = tx.get("fromAddress")
+            to_addr = tx.get("toAddress")
+
+            print("Transaction Detected")
+            print(f"Amount: {amount} {asset}")
+            print(f"From: {from_addr}")
+            print(f"To: {to_addr}")
+            print("----------------------")
+
+            exists = db.query(Transaction).filter(
+                Transaction.tx_hash == tx_hash
+            ).first()
+
+            if not exists:
+                new_tx = Transaction(
+                    tx_hash=tx_hash,
+                    asset=asset,
+                    amount=amount,
+                    from_address=from_addr,
+                    to_address=to_addr,
+                    network=network,
+                    raw_data=json.dumps(tx),
+                )
+                db.add(new_tx)
+
+            payment = db.query(PaymentRequest).filter(
+                PaymentRequest.wallet_address == to_addr,
+                PaymentRequest.amount == amount,
+                PaymentRequest.asset == asset,
+                PaymentRequest.status == "pending"
+            ).first()
+
+            if payment:
+                payment.status = "paid"
+                print(f"Payment matched: {payment.reference}")
+
+        db.commit()
+        return {"status": "processed"}
+
+    except Exception as e:
+        db.rollback()
+        print("Error:", str(e))
+        return {"status": "error", "message": str(e)}
+
+    finally:
+        db.close()
+    data = await request.json()
+
+    print("Incoming Webhook:", data)
+
+    activities = data.get("event", {}).get("activity", [])
+    network = data.get("event", {}).get("network", "")
+
+    db = SessionLocal()
+
+    try:
+        for tx in activities:
+            tx_hash = tx.get("hash")
            raw_value = tx.get("value", 0)
 decimals = tx.get("rawContract", {}).get("decimals", 6)
 
