@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 import json
 import uuid
 
@@ -175,3 +176,29 @@ def create_payment(amount: str, asset: str):
 
     finally:
         db.close()
+
+@app.post("/webhook")
+async def onramper_webhook(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {"raw": "invalid json"}
+
+    print("=== ONRAMPER WEBHOOK RECEIVED ===")
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+    return JSONResponse(
+        status_code=200,
+        content={
+            "status": "ok",
+            "message": "webhook received successfully"
+        }
+    )
+
+
+@app.get("/webhook-test")
+def webhook_test():
+    return {
+        "status": "ok",
+        "message": "webhook endpoint is live"
+    }
