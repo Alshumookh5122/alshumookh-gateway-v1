@@ -81,13 +81,19 @@ def get_payment_requests():
 
 
 @app.post("/webhook")
-async def webhook(request: Request):
-    data = await request.json()
-    print("WEBHOOK RECEIVED:", data)
-    return {"status": "ok"}
-    data = await request.json()
+async def onramper_webhook(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        payload = {"raw": "invalid json"}
 
-    print("Incoming Webhook:", data)
+    print("=== ONRAMPER WEBHOOK RECEIVED ===")
+    print(json.dumps(payload, indent=2, ensure_ascii=False))
+
+    return JSONResponse(
+        status_code=200,
+        content={"status": "ok", "message": "webhook received successfully"}
+    )
 
     activities = data.get("event", {}).get("activity", [])
     network = data.get("event", {}).get("network", "")
