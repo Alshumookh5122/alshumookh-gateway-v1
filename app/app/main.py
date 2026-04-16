@@ -165,3 +165,28 @@ def create_payment(amount: str, asset: str):
 
     finally:
         db.close()
+@app.get("/payment-requests")
+def get_payment_requests():
+    db = SessionLocal()
+    try:
+        rows = db.query(PaymentRequest).all()
+        result = []
+
+        for row in rows:
+            result.append({
+                "id": row.id,
+                "reference": row.reference,
+                "amount": row.amount,
+                "asset": row.asset,
+                "wallet_address": row.wallet_address,
+                "status": row.status,
+            })
+
+        return {
+            "status": "success",
+            "count": len(result),
+            "data": result
+        }
+
+    finally:
+        db.close()
