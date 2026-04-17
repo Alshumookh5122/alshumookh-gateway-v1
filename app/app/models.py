@@ -6,7 +6,7 @@ from typing import Optional
 from sqlalchemy import DateTime, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database import Base
+from .database import Base
 
 
 class PaymentRequest(Base):
