@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     MIN_CONFIRMATIONS: int = 1
 
     PROVIDER_NAME: str = "onramper"
+    PROVIDER_API_KEY: str = ""        # Onramper secret API key (server-to-server)
+    PROVIDER_PUBLIC_KEY: str = ""     # Onramper public key (checkout URL)
     PROVIDER_WEBHOOK_SECRET: str = ""
 
     ALCHEMY_API_KEY: str = ""
