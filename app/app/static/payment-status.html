@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 24px;
+    }
+    .card {
+      max-width: 700px;
+      margin: auto;
+      background: #1e293b;
+      padding: 24px;
+      border-radius: 12px;
+    }
+    input, button {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      margin-right: 8px;
+      margin-top: 8px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+    pre {
+      background: #0f172a;
+      padding: 16px;
+      border-radius: 8px;
+      overflow: auto;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Check Payment Status</h1>
+    <input type="text" id="apiKey" placeholder="X-API-Key" />
+    <input type="text" id="orderId" placeholder="Order ID" />
+    <button onclick="checkPayment()">Check</button>
+    <pre id="result"></pre>
+  </div>
+
+  <script>
+    async function checkPayment() {
+      const apiKey = document.getElementById("apiKey").value.trim();
+      const orderId = document.getElementById("orderId").value.trim();
+
+      const res = await fetch(`/payments/${orderId}`, {
+        headers: {
+          "X-API-Key": apiKey
+        }
+      });
+
+      const data = await res.json();
+      document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+</html>
