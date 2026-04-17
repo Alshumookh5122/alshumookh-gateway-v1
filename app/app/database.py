@@ -1,10 +1,33 @@
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
+from app.config import settings
 
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+def normalize_db_url(url: str) -> str:
+    if url.startswith("postgres://"):
+        return url.replace("postgres://", "postgresql://", 1)
+    return url
 
-Base = declarative_base()
+
+DATABASE_URL = normalize_db_url(settings.DATABASE_URL)
+
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(
+    DATABASE_URL,
+    future=True,
+    pool_pre_ping=True,
+    connect_args=connect_args,
+)
+
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False,
+    future=True,
+)
+
+
+class Base(DeclarativeBase):
+    pass
