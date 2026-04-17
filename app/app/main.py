@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .admin import router as admin_router
 from .config import settings
@@ -17,6 +19,19 @@ app = FastAPI(
 )
 
 Base.metadata.create_all(bind=engine)
+
+app.mount("/static", StaticFiles(directory="app/app/static"), name="static")
+
+
+@app.get("/dashboard-ui", include_in_schema=False)
+def dashboard_ui():
+    return FileResponse("app/app/static/dashboard.html")
+
+
+@app.get("/payment-status-ui", include_in_schema=False)
+def payment_status_ui():
+    return FileResponse("app/app/static/payment-status.html")
+
 
 app.include_router(health_router)
 app.include_router(payments_router)
