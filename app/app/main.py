@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 
-from config import settings
-from database import Base, engine
-from routes.admin import router as admin_router
-from routes.crypto import router as crypto_router
-from routes.fiat import router as fiat_router
-from routes.health import router as health_router
-from routes.payments import router as payments_router
-from routes.webhooks import router as webhooks_router
+from .config import settings
+from .database import engine
+from .models import Base
+from .admin import router as admin_router
+from .crypto import router as crypto_router
+from .fiat import router as fiat_router
+from .health import router as health_router
+from .payments import router as payments_router
+from .webhooks import router as webhooks_router
 
 app = FastAPI(
     title=settings.APP_NAME,
