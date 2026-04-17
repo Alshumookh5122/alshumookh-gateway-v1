@@ -3,11 +3,11 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.deps import get_db, require_api_key
-from app.models import PaymentRequest
+from .deps import get_db, require_api_key
+from .models import PaymentRequest
 from app.schemas import CreatePaymentRequest
 from app.services.audit_service import add_audit
-from app.utils import generate_order_id, utc_now
+from .utils import generate_order_id, utc_now
 
 router = APIRouter(prefix="/payments", tags=["payments"])
 
