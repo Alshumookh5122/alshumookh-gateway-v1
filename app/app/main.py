@@ -1,95 +1,25 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-import json
-from datetime import datetime
+from fastapi import FastAPI
 
-app = FastAPI()
+from app.config import settings
+from app.database import Base, engine
+from app.routes.admin import router as admin_router
+from app.routes.crypto import router as crypto_router
+from app.routes.fiat import router as fiat_router
+from app.routes.health import router as health_router
+from app.routes.payments import router as payments_router
+from app.routes.webhooks import router as webhooks_router
 
-# =========================
-# ROOT
-# =========================
-@app.get("/")
-def root():
-    return {
-        "message": "ALSHUMOOKH API is running"
-    }
+app = FastAPI(
+    title=settings.APP_NAME,
+    version=settings.APP_VERSION,
+    description="ALSHUMOOKH Payment Gateway API",
+)
 
-# =========================
-# HEALTH CHECK
-# =========================
-@app.get("/health")
-def health():
-    return {
-        "status": "ok",
-        "time": str(datetime.utcnow())
-    }
+Base.metadata.create_all(bind=engine)
 
-# =========================
-# TEST ENDPOINT
-# =========================
-@app.get("/webhook-test")
-def webhook_test():
-    return {
-        "status": "ok",
-        "message": "webhook endpoint is live"
-    }
-
-# =========================
-# WEBHOOK (IMPORTANT)
-# =========================
-@app.post("/webhook")
-async def webhook(request: Request):
-    try:
-        raw_body = await request.body()
-        print("===== RAW BODY =====")
-        print(raw_body.decode())
-
-        try:
-            data = json.loads(raw_body)
-        except:
-            data = {"raw": raw_body.decode()}
-
-        print("===== JSON DATA =====")
-        print(json.dumps(data, indent=2, ensure_ascii=False))
-
-
-        return JSONResponse(
-            status_code=200,
-            content={
-                "status": "ok",
-                "message": "webhook received successfully"
-            }
-        )
-
-    except Exception as e:
-        print("ERROR:", str(e))
-        return JSONResponse(
-            status_code=500,
-            content={
-                "status": "error",
-                "message": str(e)
-            }
-        )
-
-# =========================
-# FAKE TEST (POSTMAN TEST)
-# =========================
-@app.post("/simulate-payment")
-async def simulate_payment():
-    test_data = {
-        "id": "test_tx_123",
-        "status": "completed",
-        "amount": 100,
-        "currency": "USD",
-        "crypto": "BTC",
-        "wallet": "test_wallet_address",
-        "timestamp": str(datetime.utcnow())
-    }
-
-    print("===== SIMULATED PAYMENT =====")
-    print(json.dumps(test_data, indent=2))
-
-    return {
-        "status": "ok",
-        "data": test_data
-    }
+app.include_router(health_router)
+app.include_router(payments_router)
+app.include_router(fiat_router)
+app.include_router(crypto_router)
+app.include_router(admin_router)
+app.include_router(webhooks_router)
