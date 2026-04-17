@@ -1,10 +1,11 @@
 fastapi
-uvicorn
+uvicorn[standard]
 sqlalchemy
 psycopg2-binary
 pydantic
 pydantic-settings
 python-dotenv
 requests
-web3
+web3==6.15.1
 eth-account
+eth-abi
