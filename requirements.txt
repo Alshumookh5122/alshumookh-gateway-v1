@@ -7,4 +7,4 @@ pydantic-settings
 python-dotenv
 requests
 web3
-eth-abi
+eth-account
