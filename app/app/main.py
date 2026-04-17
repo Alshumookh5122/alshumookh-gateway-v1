@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.config import settings
+from config import settings
 from app.database import Base, engine
 from app.routes.admin import router as admin_router
 from app.routes.crypto import router as crypto_router
